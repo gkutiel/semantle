@@ -90,11 +90,13 @@ if __name__ == '__main__':
                 best_word = word
 
             bar.update(len(seen))
-            bar.set_description(f'{word} {distance}')
+            bar.set_description(f'{best_word} {best_distance}')
 
-            topn = int(max(0, distance))
-            topn = int(distance ** 1.6 // 630)
+            topn = int(max(1, distance))
+            topn = topn ** 1.6
+            topn = int(topn / 630)
             topn = max(1, topn)
+
             for similar, _ in model.wv.most_similar(word, topn=topn):
                 if similar not in seen:
                     q.put((-distance, similar))
