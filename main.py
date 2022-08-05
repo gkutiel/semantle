@@ -75,7 +75,9 @@ if __name__ == '__main__':
                 break
 
             words.append((distance, word))
-            print(sorted(words)[-10:], end='\r')
+            print()
+            for dis, word in sorted(words)[-10:]:
+                print(f'{dis:<5} {word}')
 
             topn = max(4, distance)
             topn = int(topn ** 0.5)
