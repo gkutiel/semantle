@@ -1,6 +1,7 @@
 import requests
 import time
 import json
+from tqdm import tqdm
 
 
 def get(word):
@@ -23,13 +24,13 @@ if __name__ == '__main__':
 
     def init_q(words):
         for word in words:
-            seen.add(word)
             q.put((INIT_SIMILARITY, word))
 
     init_q([
         'אמבטיה',
         'בגד',
         'בובה',
+        'גג',
         'חדר',
         'חומר',
         'חצאית',
@@ -50,6 +51,8 @@ if __name__ == '__main__':
         'קציר',
         'רגש',
         'רהיט',
+        'רצפה',
+        'שולחן',
         'שעון',
         'שיער',
         'תחושה',
@@ -57,10 +60,16 @@ if __name__ == '__main__':
     ])
 
     best_distance = -1
-    words = []
+    best_word = None
+    bar = tqdm()
     with open('words.json', 'w', encoding='utf-8') as f:
         while q:
             p, word = q.get()
+
+            if word in seen:
+                continue
+
+            seen.add(word)
             r = get(word)
 
             if not r['similarity']:
@@ -69,21 +78,25 @@ if __name__ == '__main__':
             print(json.dumps(r), file=f)
 
             distance = r['distance']
-            best_distance = max(best_distance, distance)
 
             if distance == 1_000:
+                print('*' * 20)
+                print('found', word)
+                print('*' * 20)
                 break
 
-            words.append((distance, word))
-            print()
-            for dis, word in sorted(words)[-10:]:
-                print(f'{dis:<5} {word}')
+            if distance > best_distance:
+                best_distance = distance
+                best_word = word
 
-            topn = max(4, distance)
-            topn = int(topn ** 0.5)
+            bar.update(len(seen))
+            bar.set_description(f'{word} {distance}')
+
+            topn = max(0, distance)
+            topn = distance ** 1.6 // 630
+            topn = max(1, topn)
             for similar, _ in model.wv.most_similar(word, topn=topn):
                 if similar not in seen:
                     q.put((-distance, similar))
-                    seen.add(similar)
 
             time.sleep(1)
