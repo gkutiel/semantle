@@ -1,7 +1,9 @@
+import heapq as hq
 import requests
 import time
 import json
 from tqdm import tqdm
+from gensim.models import Word2Vec
 
 
 def get(word):
@@ -13,18 +15,14 @@ def get(word):
 
 
 if __name__ == '__main__':
-    from gensim.models import Word2Vec
-    from queue import PriorityQueue
-
     model = Word2Vec.load('model.mdl')
 
     seen = set()
-    q = PriorityQueue()
-    INIT_SIMILARITY = -950
+    q = []
 
     def init_q(words):
         for word in words:
-            q.put((INIT_SIMILARITY, word))
+            hq.heappush(q, (-950, word))
 
     init_q([
         'אמבטיה',
@@ -64,7 +62,7 @@ if __name__ == '__main__':
     bar = tqdm()
     with open('words.json', 'w', encoding='utf-8') as f:
         while q:
-            p, word = q.get()
+            p, word = hq.heappop(q)
 
             if word in seen:
                 continue
@@ -80,6 +78,7 @@ if __name__ == '__main__':
             distance = r['distance']
 
             if distance == 1_000:
+                print('\n' * 3)
                 print('*' * 20)
                 print('found', word)
                 print('*' * 20)
@@ -89,7 +88,7 @@ if __name__ == '__main__':
                 best_distance = distance
                 best_word = word
 
-            bar.update(len(seen))
+            bar.update()
             bar.set_description(f'{best_word} {best_distance}')
 
             topn = int(max(1, distance))
@@ -98,7 +97,6 @@ if __name__ == '__main__':
             topn = max(1, topn)
 
             for similar, _ in model.wv.most_similar(word, topn=topn):
-                if similar not in seen:
-                    q.put((-distance, similar))
+                hq.heappush(q, (-distance, similar))
 
             time.sleep(1)
