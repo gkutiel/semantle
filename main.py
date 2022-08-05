@@ -23,21 +23,22 @@ if __name__ == '__main__':
     model = Word2Vec.load('model.mdl')
     seen = set()
     q = PriorityQueue()
-    q.put((50, 'ילד'))
-    q.put((50, 'בגד'))
-    q.put((50, 'חומר'))
-    q.put((50, 'נוזל'))
-    q.put((50, 'תפקיד'))
-    q.put((50, 'מכשיר'))
-    q.put((50, 'מקרר'))
-    q.put((50, 'ילדה'))
-    q.put((50, 'רגש'))
-    q.put((50, 'תחושה'))
-    q.put((50, 'חצאית'))
-    q.put((50, 'שיער'))
-    q.put((50, 'פנים'))
-    q.put((50, 'מטוס'))
-    q.put((50, 'מנוע'))
+    INIT_SIMILARITY = -50
+    q.put((INIT_SIMILARITY, 'ילד'))
+    q.put((INIT_SIMILARITY, 'בגד'))
+    q.put((INIT_SIMILARITY, 'חומר'))
+    q.put((INIT_SIMILARITY, 'נוזל'))
+    q.put((INIT_SIMILARITY, 'תפקיד'))
+    q.put((INIT_SIMILARITY, 'מכשיר'))
+    q.put((INIT_SIMILARITY, 'מקרר'))
+    q.put((INIT_SIMILARITY, 'ילדה'))
+    q.put((INIT_SIMILARITY, 'רגש'))
+    q.put((INIT_SIMILARITY, 'תחושה'))
+    q.put((INIT_SIMILARITY, 'חצאית'))
+    q.put((INIT_SIMILARITY, 'שיער'))
+    q.put((INIT_SIMILARITY, 'פנים'))
+    q.put((INIT_SIMILARITY, 'מטוס'))
+    q.put((INIT_SIMILARITY, 'מנוע'))
 
     with open('words.json', 'w', encoding='utf-8') as f:
         while q:
@@ -56,9 +57,11 @@ if __name__ == '__main__':
             if distance > 700:
                 print(f'[{q.qsize()}]', distance, r['word'])
 
-            for similar, _ in model.wv.most_similar(word, topn=3):
+            topn = max(4, distance)
+            topn = int(topn ** 0.5)
+            for similar, _ in model.wv.most_similar(word, topn=topn):
                 if similar not in seen:
-                    q.put((100 - similarity, similar))
+                    q.put((-similarity, similar))
                     seen.add(similar)
 
             time.sleep(1)
