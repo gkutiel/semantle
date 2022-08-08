@@ -3,3 +3,8 @@
 *.rar
 *.txt
 *.json
+*.tar
+*.db
+
+__pycache__/
+
