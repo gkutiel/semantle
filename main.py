@@ -15,6 +15,12 @@ def get(word):
     return r
 
 
+def notify(title, msg):
+    os.system(f'''
+        osascript -e 'display notification "{msg}" with title "{title}"'
+        ''')
+
+
 if __name__ == '__main__':
     model = Word2Vec.load('model.mdl')
     seen = set()
@@ -67,14 +73,13 @@ if __name__ == '__main__':
                 print('*' * 20)
                 print('found', word)
                 print('*' * 20)
+                notify(word, distance)
                 break
 
             if distance > best_distance:
+                notify(word, distance)
                 best_distance = distance
                 best_word = word
-                os.system(f'''
-                    osascript -e 'display notification "{best_distance}" with title "{best_word}"'
-                    ''')
 
             bar.update()
             bar.set_description(f'{best_word} {best_distance}')
