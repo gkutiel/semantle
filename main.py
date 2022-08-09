@@ -1,10 +1,10 @@
+import os
 import heapq as hq
 import requests
 import time
 import json
 from tqdm import tqdm
 from gensim.models import Word2Vec
-from plyer.facades import Notification
 
 
 def get(word):
@@ -17,7 +17,6 @@ def get(word):
 
 if __name__ == '__main__':
     model = Word2Vec.load('model.mdl')
-    notification = Notification()
     seen = set()
     q = []
 
@@ -73,6 +72,10 @@ if __name__ == '__main__':
             if distance > best_distance:
                 best_distance = distance
                 best_word = word
+                os.system(f'''
+                    osascript -e 'display notification "{best_distance}" with title "{best_word}"'
+                    '''
+
                 notification.notify(
                     title=best_word,
                     message=f'{best_distance}',
@@ -81,10 +84,10 @@ if __name__ == '__main__':
             bar.update()
             bar.set_description(f'{best_word} {best_distance}')
 
-            topn = int(max(1, distance))
-            topn = topn ** 1.6
-            topn = int(topn / 630)
-            topn = max(1, topn)
+            topn=int(max(1, distance))
+            topn=topn ** 1.6
+            topn=int(topn / 630)
+            topn=max(1, topn)
 
             for similar, _ in model.wv.most_similar(word, topn=topn):
                 hq.heappush(q, (-distance, similar))
