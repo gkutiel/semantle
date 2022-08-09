@@ -4,6 +4,7 @@ import time
 import json
 from tqdm import tqdm
 from gensim.models import Word2Vec
+from plyer.facades import Notification
 
 
 def get(word):
@@ -16,7 +17,7 @@ def get(word):
 
 if __name__ == '__main__':
     model = Word2Vec.load('model.mdl')
-
+    notification = Notification()
     seen = set()
     q = []
 
@@ -25,53 +26,22 @@ if __name__ == '__main__':
             hq.heappush(q, (-950, word))
 
     init_q([
-        'אוכל',
-        'אמבטיה',
-        'אנגלית',
-        'אמיץ',
-        'בגד',
-        'בובה',
-        'גאוותן',
-        'גג',
-        'חביתה',
-        'חגורה',
-        'חדר',
-        'חומר',
-        'חפץ',
-        'חזק',
-        'חצאית',
+        'אוכל', 'אמבטיה', 'אנגלית', 'אמיץ',
+        'בגד', 'בובה',
+        'גאוותן', 'גג',
+        'חביתה', 'חגורה', 'חדר', 'חומר', 'חפץ', 'חזק', 'חצאית',
         'טיגון',
-        'ילד',
-        'ילדה',
+        'ילד', 'ילדה',
         'כורסה',
-        'מחבת',
-        'מחשב',
-        'מיטה',
-        'מטוס',
-        'מכשיר',
-        'מנוע',
-        'מקרר',
-        'משקל',
-        'נער',
-        'נערה',
-        'נוזל',
+        'מחבת', 'מחשב', 'מיטה', 'מטוס', 'מכשיר', 'מנוע', 'מקרר', 'משקל',
+        'נער', 'נערה', 'נוזל',
         'ספר',
-        'עיניים',
-        'עצמי',
-        'עקשן',
-        'פנים',
-        'פעולה',
-        'קציר',
-        'קצפת',
-        'רגש',
-        'רהיט',
-        'רצפה',
-        'שולחן',
-        'שעון',
-        'שיער',
-        'תחושה',
-        'תפקיד',
-    ])
+        'עיניים', 'עצמי', 'עקשן',
+        'פנים', 'פעולה',
+        'קציר', 'קצפת',
+        'רגש', 'רהיט', 'רצפה',
+        'שולחן', 'שעון', 'שיער',
+        'תחושה', 'תפקיד'])
 
     best_distance = -1
     best_word = None
@@ -103,6 +73,10 @@ if __name__ == '__main__':
             if distance > best_distance:
                 best_distance = distance
                 best_word = word
+                notification.notify(
+                    title=best_word,
+                    message=f'{best_distance}',
+                    timeout=5)
 
             bar.update()
             bar.set_description(f'{best_word} {best_distance}')

@@ -193,6 +193,20 @@ dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
+name = "plyer"
+version = "2.0.0"
+description = "Platform-independent wrapper for platform-dependent APIs"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+macosx = ["pyobjus"]
+ios = ["pyobjus"]
+dev = ["flake8", "mock"]
+android = ["pyjnius"]
+
+[[package]]
 name = "py"
 version = "1.11.0"
 description = "library with cross-python path, ini-parsing, io, code, log facilities"
@@ -432,7 +446,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "3.9.*"
-content-hash = "bd69e0b93f3350ba1bcf59ae26258a8db0678d9617b5ca63a1a0a057e55fbf4c"
+content-hash = "3f05dcf51bb281cd0c19a862b831914c3de9c2d756f5530bb8eef941a2e2646f"
 
 [metadata.files]
 atomicwrites = []
@@ -481,6 +495,7 @@ pluggy = [
     {file = "pluggy-1.0.0-py2.py3-none-any.whl", hash = "sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3"},
     {file = "pluggy-1.0.0.tar.gz", hash = "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159"},
 ]
+plyer = []
 py = [
     {file = "py-1.11.0-py2.py3-none-any.whl", hash = "sha256:607c53218732647dff4acdfcd50cb62615cedf612e72d1724fb1a0cc6405b378"},
     {file = "py-1.11.0.tar.gz", hash = "sha256:51c75c4126074b472f746a24399ad32f6053d1b34b68d2fa41e558e6f4a98719"},
