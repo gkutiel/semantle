@@ -7,4 +7,5 @@
 *.db
 
 __pycache__/
+!seed.txt
 

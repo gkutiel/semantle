@@ -5,6 +5,7 @@ import time
 import json
 from tqdm import tqdm
 from gensim.models import Word2Vec
+from datetime import datetime as dt
 
 
 def get(word):
@@ -26,32 +27,15 @@ if __name__ == '__main__':
     seen = set()
     q = []
 
-    def init_q(words):
-        for word in words:
+    with open('seed.txt') as f:
+        for word in f.read().splitlines():
             hq.heappush(q, (-950, word))
-
-    init_q([
-        'אוכל', 'אמבטיה', 'אנגלית', 'אמיץ',
-        'בגד', 'בובה',
-        'גאוותן', 'גג',
-        'חביתה', 'חגורה', 'חדר', 'חומר', 'חפץ', 'חזק', 'חצאית','חלום',
-        'טיגון',
-        'ילד', 'ילדה',
-        'כורסה',
-        'מחבת', 'מחשב', 'מיטה', 'מטוס', 'מכשיר', 'מנוע', 'מקרר', 'משקל',
-        'נער', 'נערה', 'נוזל',
-        'ספר',
-        'עיניים', 'עצמי', 'עקשן',
-        'פנים', 'פעולה',
-        'קציר', 'קצפת',
-        'רגש', 'רהיט', 'רצפה','רוח',
-        'שולחן', 'שעון', 'שיער',
-        'תחושה', 'תפקיד'])
 
     best_distance = -1
     best_word = None
     bar = tqdm()
-    with open('words.json', 'w', encoding='utf-8') as f:
+    date = dt.strftime(dt.now(), '%Y-%m-%d')
+    with open(f'{date}.json', 'w', encoding='utf-8') as f:
         while q:
             p, word = hq.heappop(q)
 
