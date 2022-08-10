@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
     with open('seed.txt') as f:
         for word in f.read().splitlines():
-            hq.heappush(q, (-950, word))
+            hq.heappush(q, (-100, word))
 
     best_distance = -1
     best_word = None
@@ -68,12 +68,7 @@ if __name__ == '__main__':
             bar.update()
             bar.set_description(f'{best_word} {best_distance}')
 
-            topn = int(max(1, distance))
-            topn = topn ** 1.6
-            topn = int(topn / 630)
-            topn = max(1, topn)
-
-            for similar, _ in model.wv.most_similar(word, topn=topn):
+            for similar, _ in model.wv.most_similar(word, topn=30):
                 hq.heappush(q, (-distance, similar))
 
             time.sleep(1)
