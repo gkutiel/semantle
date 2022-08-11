@@ -31,7 +31,7 @@ if __name__ == '__main__':
         for word in f.read().splitlines():
             hq.heappush(q, (-50, word))
 
-    best_distance = -1
+    best_similarity = -1
     best_word = None
     bar = tqdm()
     date = dt.strftime(dt.now(), '%Y-%m-%d')
@@ -52,23 +52,21 @@ if __name__ == '__main__':
 
             print(json.dumps(r), file=f)
 
-            distance = r['distance']
+            if similarity > best_similarity:
+                notify(word, similarity)
+                best_similarity = similarity
+                best_word = word
 
-            if distance == 1_000:
+            bar.update()
+            bar.set_description(f'{best_word} {best_similarity}')
+
+            for similar, _ in model.wv.most_similar(word, topn=30):
+                hq.heappush(q, (-similarity, similar))
+
+            if r['distance'] == 1_000:
                 print('\n' * 3)
                 print('*' * 20)
                 print('found', word)
                 print('*' * 20)
-                notify(word, distance)
+                notify(word, similarity)
                 break
-
-            if distance > best_distance:
-                notify(word, distance)
-                best_distance = distance
-                best_word = word
-
-            bar.update()
-            bar.set_description(f'{best_word} {best_distance}')
-
-            for similar, _ in model.wv.most_similar(word, topn=30):
-                hq.heappush(q, (-similarity, similar))
