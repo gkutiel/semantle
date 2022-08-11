@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
     with open('seed.txt') as f:
         for word in f.read().splitlines():
-            hq.heappush(q, (-100, word))
+            hq.heappush(q, (-50, word))
 
     best_distance = -1
     best_word = None
@@ -44,8 +44,10 @@ if __name__ == '__main__':
 
             seen.add(word)
             r = get(word)
+            time.sleep(1)
 
-            if not r['similarity']:
+            similarity = r['similarity']
+            if not similarity:
                 continue
 
             print(json.dumps(r), file=f)
@@ -69,6 +71,4 @@ if __name__ == '__main__':
             bar.set_description(f'{best_word} {best_distance}')
 
             for similar, _ in model.wv.most_similar(word, topn=30):
-                hq.heappush(q, (-distance, similar))
-
-            time.sleep(1)
+                hq.heappush(q, (-similarity, similar))
