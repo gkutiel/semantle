@@ -29,7 +29,7 @@ if __name__ == '__main__':
 
     with open('seed.txt') as f:
         for word in f.read().splitlines():
-            hq.heappush(q, (-50, word))
+            hq.heappush(q, (-70, word))
 
     best_similarity = -1
     best_word = None
