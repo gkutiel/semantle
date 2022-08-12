@@ -50,15 +50,17 @@ if __name__ == '__main__':
             if not similarity:
                 continue
 
+            distance = r['distance']
+
             print(json.dumps(r), file=f)
 
             if similarity > best_similarity:
-                notify(word, similarity)
+                notify(word, distance)
                 best_similarity = similarity
                 best_word = word
 
             bar.update()
-            bar.set_description(f' {best_word} {best_similarity} ')
+            bar.set_description(f'- {best_word} {distance} -')
 
             for similar, _ in model.wv.most_similar(word, topn=30):
                 hq.heappush(q, (-similarity, similar))
