@@ -33,7 +33,7 @@ if __name__ == '__main__':
 
     best_similarity = -1
     best_word = None
-    bar = tqdm()
+    bar = tqdm(unit=' it ')
     date = dt.strftime(dt.now(), '%Y-%m-%d')
     with open(f'{date}.json', 'w', encoding='utf-8') as f:
         while q:
@@ -58,9 +58,9 @@ if __name__ == '__main__':
                 notify(word, distance)
                 best_similarity = similarity
                 best_word = word
+                bar.set_description(f'{best_word} {distance}')
 
             bar.update()
-            bar.set_description(f'- {best_word} {distance} -')
 
             for similar, _ in model.wv.most_similar(word, topn=30):
                 hq.heappush(q, (-similarity, similar))
