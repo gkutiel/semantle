@@ -58,7 +58,7 @@ if __name__ == '__main__':
                 best_word = word
 
             bar.update()
-            bar.set_description(f'{best_word} {best_similarity}')
+            bar.set_description(f' {best_word} {best_similarity} ')
 
             for similar, _ in model.wv.most_similar(word, topn=30):
                 hq.heappush(q, (-similarity, similar))
