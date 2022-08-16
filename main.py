@@ -70,5 +70,4 @@ if __name__ == '__main__':
                 print('*' * 20)
                 print('found', word)
                 print('*' * 20)
-                notify(word, similarity)
                 break
