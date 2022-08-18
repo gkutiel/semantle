@@ -35,39 +35,41 @@ if __name__ == '__main__':
     best_word = None
     bar = tqdm(unit=' it ')
     date = dt.strftime(dt.now(), '%Y-%m-%d')
-    with open(f'{date}.json', 'w', encoding='utf-8') as f:
-        while q:
-            p, word = hq.heappop(q)
+    with open('last.json', 'w', encoding='utf-8') as last:
+        with open(f'{date}.json', 'w', encoding='utf-8') as f:
+            while q:
+                p, word = hq.heappop(q)
 
-            if word in seen:
-                continue
+                if word in seen:
+                    continue
 
-            seen.add(word)
-            r = get(word)
-            time.sleep(1)
+                seen.add(word)
+                r = get(word)
+                time.sleep(1)
 
-            similarity = r['similarity']
-            if not similarity:
-                continue
+                similarity = r['similarity']
+                if not similarity:
+                    continue
 
-            distance = r['distance']
+                distance = r['distance']
 
-            print(json.dumps(r), file=f)
+                print(json.dumps(r), file=f)
+                print(json.dumps(r), file=last)
 
-            if similarity > best_similarity:
-                notify(word, distance)
-                best_similarity = similarity
-                best_word = word
-                bar.set_description(f'{best_word} {distance}')
+                if similarity > best_similarity:
+                    notify(word, distance)
+                    best_similarity = similarity
+                    best_word = word
+                    bar.set_description(f'{best_word} {distance}')
 
-            bar.update()
+                bar.update()
 
-            for similar, _ in model.wv.most_similar(word, topn=30):
-                hq.heappush(q, (-similarity, similar))
+                for similar, _ in model.wv.most_similar(word, topn=30):
+                    hq.heappush(q, (-similarity, similar))
 
-            if r['distance'] == 1_000:
-                print('\n' * 3)
-                print('*' * 20)
-                print('found', word)
-                print('*' * 20)
-                break
+                if r['distance'] == 1_000:
+                    print('\n' * 3)
+                    print('*' * 20)
+                    print('found', word)
+                    print('*' * 20)
+                    break
