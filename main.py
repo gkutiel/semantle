@@ -20,6 +20,9 @@ def notify(title, msg):
     os.system(f'''
         osascript -e 'display notification "{msg}" with title "{title}"'
         ''')
+    os.system(f'''
+        notify-send '{title}' '{msg}'
+    ''')
 
 
 if __name__ == '__main__':
