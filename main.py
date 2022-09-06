@@ -6,6 +6,7 @@ import json
 from tqdm import tqdm
 from gensim.models import Word2Vec
 from datetime import datetime as dt
+from sys import platform
 
 
 def get(word):
@@ -17,12 +18,12 @@ def get(word):
 
 
 def notify(title, msg):
-    os.system(f'''
-        osascript -e 'display notification "{msg}" with title "{title}"'
-        ''')
-    os.system(f'''
-        notify-send '{title}' '{msg}'
-    ''')
+    if 'linux' in platform:
+        os.system(f'notify-send "{title}" "{msg}"')
+    elif 'win' in platform:
+        pass
+    else:
+        os.system(f'''osascript -e 'display notification "{msg}" with title "{title}"' ''')
 
 
 if __name__ == '__main__':
