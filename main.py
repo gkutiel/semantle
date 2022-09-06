@@ -19,7 +19,7 @@ def get(word):
 
 def notify(title, msg):
     if 'linux' in platform:
-        os.system(f'notify-send "{title}" "{msg}"')
+        os.system(f'notify-send " {title}" " {msg}"')
     elif 'win' in platform:
         pass
     else:
