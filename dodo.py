@@ -9,7 +9,7 @@ def task_download_tokens():
         'uptodate': [run_once],
         'actions': [
             f'''wget \
-                "https://drive.google.com/u/0/uc?id=1sJi6qElF9ex-zCHagLh4CNgZLohzZEz5&export=download&confirm=t&uuid=1e70a5c4-0fd6-439c-a9ed-bd593815602d" \
+                "https://drive.google.com/file/d/1ysGHa2XsqEzAcs-guFS-05b66bsdSwyU/view?usp=drive_link&export=download&confirm=t" \
                 -O {tokens_tar}''']}
 
 

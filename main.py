@@ -1,16 +1,17 @@
-import os
 import heapq as hq
-import requests
-import time
 import json
-from tqdm import tqdm
-from gensim.models import Word2Vec
+import os
+import time
 from datetime import datetime as dt
 from sys import platform
 
+import requests
+from gensim.models import Word2Vec
+from tqdm import tqdm
+
 
 def get(word):
-    url = "https://semantle-he.herokuapp.com/api/distance?word=" + word
+    url = "https://semantle.ishefi.com/api/distance?word=" + word
     r = requests.get(url).json()
     assert r is not None
     r['word'] = word
@@ -23,7 +24,8 @@ def notify(title, msg):
     elif 'win' in platform:
         pass
     else:
-        os.system(f'''osascript -e 'display notification "{msg}" with title "{title}"' ''')
+        os.system(
+            f'''osascript -e 'display notification "{msg}" with title "{title}"' ''')
 
 
 if __name__ == '__main__':
@@ -42,38 +44,41 @@ if __name__ == '__main__':
     with open('last.json', 'w', encoding='utf-8') as last:
         with open(f'{date}.json', 'w', encoding='utf-8') as f:
             while q:
-                p, word = hq.heappop(q)
+                try:
+                    p, word = hq.heappop(q)
 
-                if word in seen:
-                    continue
+                    if word in seen:
+                        continue
 
-                seen.add(word)
-                r = get(word)
-                time.sleep(1)
+                    seen.add(word)
+                    r = get(word)
+                    time.sleep(1)
 
-                similarity = r['similarity']
-                if not similarity:
-                    continue
+                    similarity = r['similarity']
+                    if not similarity:
+                        continue
 
-                distance = r['distance']
+                    distance = r['distance']
 
-                print(json.dumps(r), file=f)
-                print(json.dumps(r), file=last)
+                    print(json.dumps(r), file=f)
+                    print(json.dumps(r), file=last)
 
-                if similarity > best_similarity:
-                    notify(word, distance)
-                    best_similarity = similarity
-                    best_word = word
-                    bar.set_description(f'{best_word} {distance}')
+                    if similarity > best_similarity:
+                        notify(word, distance)
+                        best_similarity = similarity
+                        best_word = word
+                        bar.set_description(f'{best_word} {distance}')
 
-                bar.update()
+                    bar.update()
 
-                for similar, _ in model.wv.most_similar(word, topn=30):
-                    hq.heappush(q, (-similarity, similar))
+                    for similar, _ in model.wv.most_similar(word, topn=30):
+                        hq.heappush(q, (-similarity, similar))
 
-                if r['distance'] == 1_000:
-                    print('\n' * 3)
-                    print('*' * 20)
-                    print('found', word)
-                    print('*' * 20)
-                    break
+                    if r['distance'] == 1_000:
+                        print('\n' * 3)
+                        print('*' * 20)
+                        print('found', word)
+                        print('*' * 20)
+                        break
+                except:
+                    pass

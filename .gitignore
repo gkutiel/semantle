@@ -5,6 +5,9 @@
 *.json
 *.tar
 *.db
+*.dat
+*.zip
+*.dir
 
 __pycache__/
 !seed.txt
