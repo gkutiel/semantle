@@ -2,10 +2,8 @@ import heapq as hq
 import json
 import os
 import time
-import traceback
 from datetime import datetime as dt
 from sys import platform
-from urllib import parse
 
 import requests
 from gensim.models import Word2Vec
@@ -70,7 +68,7 @@ if __name__ == '__main__':
 
                     dump(r, f, last)
 
-                    for similar, _ in model.wv.most_similar(word, topn=10):
+                    for similar, _ in model.wv.most_similar(word, topn=30):
                         hq.heappush(q, (-similarity, similar))
 
                     bar.set_postfix(
