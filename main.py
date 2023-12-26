@@ -28,7 +28,6 @@ if __name__ == '__main__':
     q = []
     best_distance = -2
     best_word = None
-    bar = tqdm(unit='it', desc='Searching')
     date = dt.strftime(dt.now(), '%Y-%m-%d')
     with open('last.json', 'w', encoding='utf-8') as last:
         with open(f'{date}.json', 'w', encoding='utf-8') as f:
@@ -61,8 +60,6 @@ if __name__ == '__main__':
                     words.set_postfix(
                         distance=best_distance,
                         word=best_word)
-
-                    bar.update()
 
                     if dist == 1000:
                         break
