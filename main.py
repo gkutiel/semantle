@@ -32,17 +32,17 @@ if __name__ == '__main__':
     date = dt.strftime(dt.now(), '%Y-%m-%d')
     with open('last.json', 'w', encoding='utf-8') as last:
         with open(f'{date}.json', 'w', encoding='utf-8') as f:
+
             def add(word) -> int:
                 if word in seen:
                     return -1
 
                 try:
+                    seen.add(word)
                     url = f'https://semantle.ishefi.com/api/distance?word={word}'
                     r = requests.get(url).json()
-                    sim = r['similarity']
-                    hq.heappush(q, (-sim, word))
-                    r['word'] = word
-                    dump(r, f, last)
+                    hq.heappush(q, (-r['similarity'], word))
+                    dump(r | {'word': word}, f, last)
                     return r['distance']
                 except Exception:
                     return -1
@@ -58,7 +58,12 @@ if __name__ == '__main__':
                         best_distance = dist
                         best_word = word
 
-                    words.set_postfix(distance=best_distance, word=best_word)
+                    words.set_postfix(
+                        distance=best_distance,
+                        word=best_word)
+
+                    bar.update()
+
                     if dist == 1000:
                         break
 
@@ -66,8 +71,9 @@ if __name__ == '__main__':
                 add_all(f.read().splitlines(), desc='Loading seed')
 
             def words():
-                _, word = hq.heappop(q)
-                for similar, _ in model.wv.most_similar(word, topn=30):
-                    yield similar
+                while q:
+                    _, word = hq.heappop(q)
+                    for similar, _ in model.wv.most_similar(word, topn=30):
+                        yield similar
 
             add_all(words(), desc='Searching')
