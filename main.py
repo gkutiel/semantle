@@ -10,15 +10,6 @@ from gensim.models import Word2Vec
 from tqdm import tqdm
 
 
-def get(word):
-    time.sleep(1)
-    url = f'https://semantle.ishefi.com/api/distance?word={word}'
-    r = requests.get(url).json()
-    assert r is not None
-    r['word'] = word
-    return r
-
-
 def notify(title, msg):
     if 'linux' in platform:
         os.system(f'notify-send " {title}" " {msg}"')
@@ -31,53 +22,50 @@ def dump(obj, *files):
 
 if __name__ == '__main__':
     model = Word2Vec.load('model.mdl')
+
     seen = set()
     q = []
-
-    with open('seed.txt', encoding='utf8') as f:
-        for word in tqdm(f.read().splitlines(), desc='Loading seed'):
-            hq.heappush(q, (-60, word))
-
-    errors = 0
-    best_similarity = -1
     best_distance = 0
     best_word = None
     bar = tqdm(unit='it', desc='Searching')
     date = dt.strftime(dt.now(), '%Y-%m-%d')
     with open('last.json', 'w', encoding='utf-8') as last:
         with open(f'{date}.json', 'w', encoding='utf-8') as f:
-            while q and best_distance < 1_000:
+            def add(word) -> int:
+                if word in seen:
+                    return -1
+
                 try:
-                    p, word = hq.heappop(q)
+                    url = f'https://semantle.ishefi.com/api/distance?word={word}'
+                    r = requests.get(url).json()
+                    sim = r['similarity']
+                    hq.heappush(q, (-sim, word))
+                    r['word'] = word
+                    dump(r, f, last)
+                    return r['distance']
+                except Exception:
+                    return -1
+                finally:
+                    time.sleep(1)
 
-                    if word in seen:
-                        continue
-
-                    seen.add(word)
-
-                    r = get(word)
-
-                    similarity = r['similarity']
-                    distance = r['distance']
-
-                    if similarity > best_similarity:
-                        # notify(word, distance)
-                        best_similarity = similarity
-                        best_distance = distance
+            with open('seed.txt', encoding='utf8') as f:
+                for word in tqdm(f.read().splitlines(), desc='Loading seed'):
+                    dist = add(word)
+                    if dist > best_distance:
+                        best_distance = dist
                         best_word = word
 
-                    dump(r, f, last)
+            while q and best_distance < 1_000:
+                _, word = hq.heappop(q)
 
-                    for similar, _ in model.wv.most_similar(word, topn=30):
-                        hq.heappush(q, (-similarity, similar))
+                for similar, _ in model.wv.most_similar(word, topn=30):
+                    dist = add(similar)
+                    if dist > best_distance:
+                        best_distance = dist
+                        best_word = similar
 
-                    bar.set_postfix(
-                        errors=errors,
-                        similarity=best_similarity,
-                        distance=best_distance,
-                        word=best_word)
+                bar.set_postfix(
+                    distance=best_distance,
+                    word=best_word)
 
-                    bar.update()
-
-                except Exception:
-                    errors += 1
+                bar.update()
