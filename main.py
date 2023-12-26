@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     with open('seed.txt', encoding='utf8') as f:
         for word in tqdm(f.read().splitlines(), desc='Loading seed'):
-            hq.heappush(q, (-70, word))
+            hq.heappush(q, (-60, word))
 
     errors = 0
     best_similarity = -1
@@ -48,17 +48,9 @@ if __name__ == '__main__':
     date = dt.strftime(dt.now(), '%Y-%m-%d')
     with open('last.json', 'w', encoding='utf-8') as last:
         with open(f'{date}.json', 'w', encoding='utf-8') as f:
-            while q:
+            while q and best_distance < 1_000:
                 try:
                     p, word = hq.heappop(q)
-
-                    bar.set_postfix(
-                        errors=errors,
-                        similarity=best_similarity,
-                        distance=best_distance,
-                        word=best_word)
-
-                    bar.update()
 
                     if word in seen:
                         continue
@@ -81,12 +73,13 @@ if __name__ == '__main__':
                     for similar, _ in model.wv.most_similar(word, topn=10):
                         hq.heappush(q, (-similarity, similar))
 
-                    if r['distance'] == 1_000:
-                        print('\n' * 3)
-                        print('*' * 20)
-                        print('found', word)
-                        print('*' * 20)
-                        break
+                    bar.set_postfix(
+                        errors=errors,
+                        similarity=best_similarity,
+                        distance=best_distance,
+                        word=best_word)
+
+                    bar.update()
 
                 except Exception:
                     errors += 1
