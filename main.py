@@ -13,6 +13,7 @@ from tqdm import tqdm
 
 
 def get(word):
+    time.sleep(1)
     url = f'https://semantle.ishefi.com/api/distance?word={word}'
     r = requests.get(url).json()
     assert r is not None
@@ -23,6 +24,11 @@ def get(word):
 def notify(title, msg):
     if 'linux' in platform:
         os.system(f'notify-send " {title}" " {msg}"')
+
+
+def dump(obj, *files):
+    for file in files:
+        print(json.dumps(obj, ensure_ascii=False), file=file)
 
 
 if __name__ == '__main__':
@@ -36,6 +42,7 @@ if __name__ == '__main__':
 
     errors = 0
     best_similarity = -1
+    best_distance = 0
     best_word = None
     bar = tqdm(unit='it', desc='Searching')
     date = dt.strftime(dt.now(), '%Y-%m-%d')
@@ -48,6 +55,7 @@ if __name__ == '__main__':
                     bar.set_postfix(
                         errors=errors,
                         similarity=best_similarity,
+                        distance=best_distance,
                         word=best_word)
 
                     bar.update()
@@ -60,19 +68,15 @@ if __name__ == '__main__':
                     r = get(word)
 
                     similarity = r['similarity']
-                    if not similarity:
-                        errors += 1
-                        continue
-
                     distance = r['distance']
 
                     if similarity > best_similarity:
                         # notify(word, distance)
                         best_similarity = similarity
+                        best_distance = distance
                         best_word = word
 
-                    print(json.dumps(r), file=f)
-                    print(json.dumps(r), file=last)
+                    dump(r, f, last)
 
                     for similar, _ in model.wv.most_similar(word, topn=10):
                         hq.heappush(q, (-similarity, similar))
@@ -83,7 +87,6 @@ if __name__ == '__main__':
                         print('found', word)
                         print('*' * 20)
                         break
+
                 except Exception:
-                    traceback.print_exc()
-                finally:
-                    time.sleep(1)
+                    errors += 1
