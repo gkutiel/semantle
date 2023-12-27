@@ -1,4 +1,3 @@
-import dis
 import heapq as hq
 import json
 import os
@@ -29,9 +28,8 @@ if __name__ == '__main__':
     best_distance = -2
     best_word = None
     date = dt.strftime(dt.now(), '%Y-%m-%d')
-    with open('last.json', 'w', encoding='utf-8') as last:
-        with open(f'{date}.json', 'w', encoding='utf-8') as f:
-
+    with open('last.json', 'w') as last:
+        with open(f'{date}.json', 'w') as current:
             def add(word) -> int:
                 if word in seen:
                     return -1
@@ -39,13 +37,10 @@ if __name__ == '__main__':
                 try:
                     seen.add(word)
                     url = f'https://semantle.ishefi.com/api/distance?word={word}'
-                    r = requests.get(url).json()
-                    dump(r | {'word': word}, f, last)
+                    r = requests.get(url).json() | {'word': word}
+                    dump(r, current, last)
                     hq.heappush(q, (-r['similarity'], word))
                     return r['distance']
-                except Exception as e:
-                    print(e)
-                    return -1
                 finally:
                     time.sleep(1)
 
@@ -65,8 +60,8 @@ if __name__ == '__main__':
                     if dist == 1000:
                         break
 
-            with open('seed.txt', encoding='utf8') as f:
-                add_all(f.read().splitlines(), desc='Loading seed')
+            with open('seed.txt', encoding='utf8') as seed:
+                add_all(seed.read().splitlines(), desc='Loading seed')
 
             def words():
                 while q:
