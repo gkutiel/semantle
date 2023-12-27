@@ -40,10 +40,11 @@ if __name__ == '__main__':
                     seen.add(word)
                     url = f'https://semantle.ishefi.com/api/distance?word={word}'
                     r = requests.get(url).json()
-                    hq.heappush(q, (-r['similarity'], word))
                     dump(r | {'word': word}, f, last)
+                    hq.heappush(q, (-r['similarity'], word))
                     return r['distance']
-                except Exception:
+                except Exception as e:
+                    print(e)
                     return -1
                 finally:
                     time.sleep(1)
