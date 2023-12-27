@@ -41,6 +41,9 @@ if __name__ == '__main__':
                     dump(r, current, last)
                     hq.heappush(q, (-r['similarity'], word))
                     return r['distance']
+                except Exception as e:
+                    print(e)
+                    return -1
                 finally:
                     time.sleep(1)
 
