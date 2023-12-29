@@ -28,6 +28,7 @@ if __name__ == '__main__':
     best_distance = -2
     best_word = None
     date = dt.strftime(dt.now(), '%Y-%m-%d')
+    bar = tqdm()
     with open('last.json', 'w') as last:
         with open(f'{date}.json', 'w') as current:
             def add(word) -> int:
@@ -49,16 +50,20 @@ if __name__ == '__main__':
 
             def add_all(words, desc):
                 global best_distance, best_word
-                words = tqdm(words, desc=desc)
+                bar.set_description(desc)
                 for word in words:
+
                     dist = add(word)
+
                     if dist > best_distance:
                         best_distance = dist
                         best_word = word
 
-                    words.set_postfix(
+                    bar.set_postfix(
                         distance=best_distance,
                         word=best_word)
+
+                    bar.update()
 
                     if dist == 1000:
                         break
