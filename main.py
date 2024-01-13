@@ -1,18 +1,19 @@
 import heapq as hq
 import json
-import os
 import time
 from datetime import datetime as dt
-from sys import platform
 
 import requests
 from gensim.models import Word2Vec
 from tqdm import tqdm
 
 
-def notify(title, msg):
-    if 'linux' in platform:
-        os.system(f'notify-send " {title}" " {msg}"')
+def notify(title: str, body: str):
+    requests.post(
+        'https://poosh.me/abc',
+        data={
+            'title': title,
+            'body': body})
 
 
 def dump(obj, *files):
@@ -58,6 +59,7 @@ if __name__ == '__main__':
                     if dist > best_distance:
                         best_distance = dist
                         best_word = word
+                        notify(word, f'{dist}/1000')
 
                     bar.set_postfix(
                         distance=best_distance,
