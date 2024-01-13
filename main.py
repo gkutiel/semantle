@@ -13,7 +13,8 @@ def notify(title: str, body: str):
         'https://poosh.me/abc',
         data={
             'title': title,
-            'body': body})
+            'body': body,
+            'sound': 'success'})
 
 
 def dump(obj, *files):
