@@ -60,8 +60,7 @@ if __name__ == '__main__':
                     if dist > best_distance:
                         best_distance = dist
                         best_word = word
-                        if dist < 1000:
-                            notify(word, f'{dist}/1000')
+                        notify(word, f'{dist}/1000')
 
                     bar.set_postfix(
                         distance=best_distance,
