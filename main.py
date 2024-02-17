@@ -76,8 +76,9 @@ if __name__ == '__main__':
 
             def words():
                 while q:
-                    _, word = hq.heappop(q)
-                    for similar, _ in model.wv.most_similar(word, topn=30):
+                    sim, word = hq.heappop(q)
+                    sim = -sim
+                    for similar, _ in model.wv.most_similar(word, topn=int(100 * sim)):
                         yield similar
 
             add_all(words(), desc='Searching')
