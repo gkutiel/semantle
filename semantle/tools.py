@@ -5,7 +5,19 @@ from tqdm import tqdm
 
 
 def seed_txt():
-    seed = ['אדם']
+    seed = [
+        'אדם',
+        'אהבה',
+        'בית',
+        'משפחה',
+        'עבודה',
+        'חברים',
+        'תרבות',
+        'פוליטיקה',
+        'חינוך',
+        'כלכלה',
+        'בריאות']
+
     word_re = re.compile(r'[אבגדהוזחטיכלמנסעפצקרשתךםןףץ]+')
 
     model = Word2Vec.load('model.mdl')
