@@ -34,4 +34,9 @@ def seed_txt():
 
 
 if __name__ == '__main__':
-    seed_txt()
+    model = Word2Vec.load('model.mdl')
+    wv = model.wv
+    words = wv.most_similar('בודד', topn=1000)
+    words = [w for w, _ in words if len(w) == 4 and 'ח' in w]
+    with open('tmp.txt', 'w', encoding='utf8') as f:
+        f.write('\n'.join(words))
